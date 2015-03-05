@@ -10,10 +10,9 @@
  * @since Version 1.0
  * @TODO
  */
-    require_once("Config.php");
-    class Database extends Config
-    {
 
+    class Database
+    {
         /**
          * Object Instance
          *
@@ -29,7 +28,7 @@
          * @var PDO
          * @access protected
          */
-        protected $pdo;
+        private $PDO;
 
 
         /**
@@ -37,46 +36,72 @@
          * and handles any errors thrown by the PDO object.
          *
          * @throws PDOException
-         * @access private
+         * @access protected
          */
-        private function __construct()
+        protected function __construct()
         {
-            $host = parent::get("database/host");
-            $dbnm = parent::get("database/dbname");
-            $user = parent::get("database/username");
-            $pass = parent::get("database/password");
-
             try
             {
-                $this->pdo = new PDO("mysql:dbname=".$dbnm.";host=".$host.";", $user, $pass);
+                $this->PDO = new PDO("mysql:dbname=test;host=localhost", "root","");
             } catch(PDOException $e)
             {
-                $error_code = $e->getCode();
-                switch($error_code)
-                {
-                    default:
-                        print("An error has been found!");
-                        break;
-                }
+                print($e->getMessage() . " | ". $e->getCode());
             }
         }
 
-        protected function select()
+        protected function query()
         {
 
         }
 
-        protected function insert()
+        /**
+         * This function is used to insert information
+         * into the database.
+         *
+         * @param String $table
+         * @param array $CV
+         * @access protected
+         * @return bool
+         */
+        protected function insert($table, $CV = array())
+        {
+            if(count($CV))
+            {
+                // Join array elements with a string
+                $columns = implode(", ", array_keys($CV));
+                $values = '';
+                $x = 1;
+
+                // Put array key values into variables
+                foreach($CV as $value)
+                {
+                    $values .= "'".$value."'";
+                    if($x < count($CV))
+                    {
+                        $values .= ', ';
+                    }
+
+                    $x++;
+                }
+
+                $sql = $this->PDO->prepare("INSERT INTO $table ($columns) VALUES({$values})");
+
+                // Check execution is successful
+                if($sql->execute())
+                    return true;
+                else
+                    return false;
+            }
+
+            return false;
+        }
+
+        protected function delete()
         {
 
         }
 
         protected function update()
-        {
-
-        }
-
-        protected function delete()
         {
 
         }
@@ -93,12 +118,11 @@
          * @access public
          * @return mixed
          */
-        public static function getInstance()
+        public function getInstance()
         {
             if(!isset(self::$instance))
                 self::$instance = new Database();
             else
-                return self::getInstance();
+                return self::$instance;
         }
     }
-?>
