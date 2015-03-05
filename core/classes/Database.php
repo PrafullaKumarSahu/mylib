@@ -11,7 +11,7 @@
  * @TODO
  */
 
-    class Database
+    class Database extends Config
     {
         /**
          * Object Instance
@@ -25,7 +25,7 @@
         /**
          * The active PDO connection
          *
-         * @var PDO
+         * @var PDO object
          * @access protected
          */
         private $PDO;
@@ -40,12 +40,23 @@
          */
         protected function __construct()
         {
+            $host = parent::get("database/host");
+            $dbnm = parent::get("database/dbname");
+            $user = parent::get("database/username");
+            $pass = parent::get("database/password");
+
             try
             {
-                $this->PDO = new PDO("mysql:dbname=test;host=localhost", "root","");
+                $this->PDO = new PDO("mysql:dbname=".$dbnm.";host=".$host.";", $user, $pass);
             } catch(PDOException $e)
             {
-                print($e->getMessage() . " | ". $e->getCode());
+                $error_code = $e->getCode();
+                switch($error_code)
+                {
+                    default:
+                        print("An error has been found!");
+                        break;
+                }
             }
         }
 
