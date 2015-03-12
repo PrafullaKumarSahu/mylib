@@ -26,7 +26,7 @@
                 "host" => "localhost",
                 "username" => "root",
                 "password" => "",
-                "dbname" => "mylib"
+                "dbname" => "test"
             )
         );
 
@@ -36,7 +36,7 @@
          * @param null $path
          * @return array, mixed
          */
-        public static function get($path = null)
+        public static function getConf($path = null)
         {
             if($path != null)
             {

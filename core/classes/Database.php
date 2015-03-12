@@ -28,7 +28,7 @@
          * @var PDO object
          * @access protected
          */
-        private $PDO;
+        private $PDO, $results;
 
 
         /**
@@ -40,10 +40,10 @@
          */
         protected function __construct()
         {
-            $host = parent::get("database/host");
-            $dbnm = parent::get("database/dbname");
-            $user = parent::get("database/username");
-            $pass = parent::get("database/password");
+            $host = parent::getConf("database/host");
+            $dbnm = parent::getConf("database/dbname");
+            $user = parent::getConf("database/username");
+            $pass = parent::getConf("database/password");
 
             try
             {
@@ -58,11 +58,6 @@
                         break;
                 }
             }
-        }
-
-        protected function query()
-        {
-
         }
 
         /**
@@ -107,14 +102,127 @@
             return false;
         }
 
-        protected function delete()
+        /**
+         * @param $table
+         * @param array $CV
+         * @param null $condition
+         */
+        protected function update($table, $CV = array(), $condition = null)
         {
-
+            // TODO
         }
 
-        protected function update()
+        /**
+         * This function is used to get data from the database,
+         * it will first check the parameters against a few conditions,
+         * if the condition pass then it will set the variable $results,
+         * to the data retrieved on the database and will return true. If the query does not
+         * match any data, the function will return false;
+         *
+         * @param $table
+         * @param null $columns
+         * @param null $condition
+         * @access protected
+         * @return bool
+         */
+        protected function get($table, $columns = null, $condition = null)
         {
+            // If columns is not null, do some checks
+            if($columns != null)
+            {
+                // If condition is not null
+                if($condition != null)
+                {
+                    $q = $this->PDO->prepare("SELECT $columns FROM $table WHERE $condition");
+                    if($q->execute())
+                    {
+                        $this->results = $q->fetchAll(PDO::FETCH_OBJ);
+                        return true;
+                    }
+                        return false;
+                }
+                else
+                {
+                    // If condition is null
+                    $q = $this->PDO->prepare("SELECT $columns FROM $table");
+                    if($q->execute())
+                    {
+                        $this->results = $q->fetchAll(PDO::FETCH_OBJ);
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            // If columns is null, do some checks
+            else
+            {
+                // Condition is not null
+                if($condition != null)
+                {
+                    $q = $this->PDO->prepare("SELECT * FROM $table WHERE $condition");
+                    if($q->execute())
+                    {
+                        $this->results = $q->fetchAll(PDO::FETCH_OBJ);
+                        return true;
+                    }
+                    return false;
+                }
+                // Condition is null
+                else
+                {
+                    $q = $this->PDO->prepare("SELECT * FROM $table");
+                    if($q->execute())
+                    {
+                        $this->results = $q->fetchAll(PDO::FETCH_OBJ);
+                        return true;
+                    }
+                    return false;
+                }
+            }
+        }
 
+        /**
+         * This function is used to delete data from the database
+         *
+         * @param $table
+         * @param null $condition
+         * @access protected
+         * @return bool
+         */
+        protected function delete($table, $condition = null)
+        {
+            if($condition != null) {
+                $q = $this->PDO->prepare("DELETE FROM $table WHERE $condition");
+
+                if ($q->execute())
+                {
+                    $this->results = $q->fetchAll(PDO::FETCH_OBJ);
+                    return true;
+                } else
+                {
+                    return false;
+                }
+
+            } else
+            {
+                $q = $this->PDO->prepare("DELETE FROM $table");
+                if($q->execute())
+                    return true;
+                else
+                    return false;
+            }
+        }
+
+        /**
+         * This function is used to retrieve the data stored
+         * on the variable $results
+         *
+         * @access public
+         * @return FETCHED PDO
+         */
+        public function getResults()
+        {
+            return $this->results;
         }
 
         /**
