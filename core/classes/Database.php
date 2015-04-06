@@ -1,99 +1,148 @@
 <?php
-/**
- * Class Database
- *
- * Deals with everything to do with database,
- * including queries and database configuration.
- *
- * @author Andre Ferraz
- * @copyright 2015 Andre Ferraz
- * @since Version 1.0
- * @TODO
- */
 
-    class Database extends Config
+    /**
+     * CLASS: Database
+     *
+     * Description: This class deals with all database connection
+     * across the website. If any class needs to use the database
+     * it has to extends this one.
+     *
+     * @author: Andre Ferraz
+     * @copyright: ^
+     * @version: 2.0
+     */
+    class Database
     {
         /**
-         * Object Instance
+         * Holds Class Object instance
          *
          * @var Object
-         * @staticvar
-         * @access private
+         * @access: Private
+         * @static
          */
-        private static $instance;
+        private static $_instace;
 
         /**
-         * The active PDO connection
+         * Holds PDO Object
          *
-         * @var PDO object
-         * @access protected
+         * @var PDO
+         * @access: Private
          */
-        private $PDO, $results;
-
+        private $_pdo;
 
         /**
-         * Constructor initialises database connection,
-         * and handles any errors thrown by the PDO object.
+         * Used to keep track of how many columns
+         * has been found!
          *
-         * @throws PDOException
-         * @access protected
+         * @var int
+         * @access: Private
+         */
+        private $_count;
+
+        /**
+         * Holds data from database
+         *
+         * @var array
+         * @access: Private
+         */
+        private $_results = array();
+
+        /**
+         * Description: Instantiates PDO object
+         *
+         * @access: Protected
          */
         protected function __construct()
         {
-            $host = parent::getConf("database/host");
-            $dbnm = parent::getConf("database/dbname");
-            $user = parent::getConf("database/username");
-            $pass = parent::getConf("database/password");
+            $host = Config::get("database:host");
+            $user = Config::get("database:username");
+            $pass = Config::get("database:password");
+            $dbna = Config::get("database:dbname");
 
             try
             {
-                $this->PDO = new PDO("mysql:dbname=".$dbnm.";host=".$host.";", $user, $pass);
-            } catch(PDOException $e)
+                $this->_pdo = new PDO("mysql:dbname=".$dbna.";host=".$host.";", $user, $pass);
+            }
+            catch(PDOException $e)
             {
-                $error_code = $e->getCode();
-                switch($error_code)
-                {
-                    default:
-                        print("An error has been found!");
-                        break;
-                }
+                Redirect::to(500);
             }
         }
 
         /**
-         * This function is used to insert information
-         * into the database.
+         * Description: Gets data from the database
          *
-         * @param String $table
-         * @param array $CV
-         * @access protected
-         * @return bool
+         * @access: protected
+         * @return boolean
          */
-        protected function insert($table, $CV = array())
+        protected function get($table, $columns, $condition = null)
         {
-            if(count($CV))
+            if($condition != null)
             {
-                // Join array elements with a string
-                $columns = implode(", ", array_keys($CV));
-                $values = '';
-                $x = 1;
-
-                // Put array key values into variables
-                foreach($CV as $value)
+                $query = $this->_pdo->prepare("SELECT $columns FROM $table WHERE $condition");
+                if($query->execute())
                 {
-                    $values .= "'".$value."'";
-                    if($x < count($CV))
+                    $this->_count = $query->rowCount();
+                    if($this->_count > 0)
                     {
-                        $values .= ', ';
+                        $this->_results = $query->fetchAll();
+                        return true;
                     }
 
+                    return false;
+                }
+            }
+            return false;
+            //@todo condition == null
+        }
+
+        /**
+         * Description: Very similar to get function, but
+         * instead it just checks if data exists without storing
+         * any data.
+         *
+         * @access: protected
+         * @return boolean
+         */
+        protected function query($table, $columns, $condition = null)
+        {
+            if($condition != null)
+            {
+                $query = $this->_pdo->prepare("SELECT $columns FROM $table WHERE $condition");
+                if($query->execute())
+                {
+                    $this->_count = $query->rowCount();
+                    return(($this->_count > 0)? true : false);
+                }
+            }
+            return false;
+            //@todo condition == null
+        }
+
+        /**
+         * Description: Updates information on the database
+         *
+         * @access: protected
+         */
+        protected function update($table, $CV = array(), $condition)
+        {
+            if($CV !=null)
+            {
+                $columns = '';
+                $x = 1;
+
+                foreach($CV as $key => $value)
+                {
+                    $columns .= "$key='$value'";
+                    if($x < count($CV))
+                    {
+                        $columns .= ",";
+                    }
                     $x++;
                 }
 
-                $sql = $this->PDO->prepare("INSERT INTO $table ($columns) VALUES({$values})");
-
-                // Check execution is successful
-                if($sql->execute())
+                $query = $this->_pdo->prepare("UPDATE $table SET $columns WHERE $condition");
+                if($query->execute())
                     return true;
                 else
                     return false;
@@ -103,145 +152,46 @@
         }
 
         /**
-         * @param $table
-         * @param array $CV
-         * @param null $condition
+         * Description: Inserts data into database
+         *
+         * @access: protected
          */
-        protected function update($table, $CV = array(), $condition = null)
+        protected function insert()
         {
-            // TODO
+            //@todo
         }
 
         /**
-         * This function is used to get data from the database,
-         * it will first check the parameters against a few conditions,
-         * if the condition pass then it will set the variable $results,
-         * to the data retrieved on the database and will return true. If the query does not
-         * match any data, the function will return false;
+         * Description: Deletes data from the database
          *
-         * @param $table
-         * @param null $columns
-         * @param null $condition
-         * @access protected
-         * @return bool
+         * @access: protected
          */
-        protected function get($table, $columns = null, $condition = null)
+        protected function delete()
         {
-            // If columns is not null, do some checks
-            if($columns != null)
-            {
-                // If condition is not null
-                if($condition != null)
-                {
-                    $q = $this->PDO->prepare("SELECT $columns FROM $table WHERE $condition");
-                    if($q->execute())
-                    {
-                        $this->results = $q->fetchAll(PDO::FETCH_OBJ);
-                        return true;
-                    }
-                        return false;
-                }
-                else
-                {
-                    // If condition is null
-                    $q = $this->PDO->prepare("SELECT $columns FROM $table");
-                    if($q->execute())
-                    {
-                        $this->results = $q->fetchAll(PDO::FETCH_OBJ);
-                        return true;
-                    }
-                    return false;
-                }
-            }
-            // If columns is null, do some checks
-            else
-            {
-                // Condition is not null
-                if($condition != null)
-                {
-                    $q = $this->PDO->prepare("SELECT * FROM $table WHERE $condition");
-                    if($q->execute())
-                    {
-                        $this->results = $q->fetchAll(PDO::FETCH_OBJ);
-                        return true;
-                    }
-                    return false;
-                }
-                // Condition is null
-                else
-                {
-                    $q = $this->PDO->prepare("SELECT * FROM $table");
-                    if($q->execute())
-                    {
-                        $this->results = $q->fetchAll(PDO::FETCH_OBJ);
-                        return true;
-                    }
-                    return false;
-                }
-            }
+            //@todo
+        }
+
+        protected function getResults()
+        {
+            return $this->_results;
         }
 
         /**
-         * This function is used to delete data from the database
+         * Description: Singleton pattern, prevents multiple
+         * instantiations of the same class.
          *
-         * @param $table
-         * @param null $condition
-         * @access protected
-         * @return bool
-         */
-        protected function delete($table, $condition = null)
-        {
-            if($condition != null) {
-                $q = $this->PDO->prepare("DELETE FROM $table WHERE $condition");
-
-                if ($q->execute())
-                {
-                    $this->results = $q->fetchAll(PDO::FETCH_OBJ);
-                    return true;
-                } else
-                {
-                    return false;
-                }
-
-            } else
-            {
-                $q = $this->PDO->prepare("DELETE FROM $table");
-                if($q->execute())
-                    return true;
-                else
-                    return false;
-            }
-        }
-
-        /**
-         * This function is used to retrieve the data stored
-         * on the variable $results
+         * NOTE: This is not needed. Only for "show of"
          *
-         * @access public
-         * @return FETCHED PDO
-         */
-        public function getResults()
-        {
-            return $this->results;
-        }
-
-        /**
-         * Singleton Function
-         *
-         * Checks if instance variable has been set if not,
-         * its assigned to a instance of the class. This
-         * will also prevent multiple instances of the class to
-         * be instantiated.
-         *
+         * @access: public
          * @static
-         * @access public
-         * @return mixed
+         * @return Object
          */
-        public function getInstance()
+        public static function instance()
         {
-            if(!isset(self::$instance))
-                self::$instance = new Database();
+            if(isset(self::$_instace))
+                return self::$_instace;
             else
-                return self::$instance;
+                self::$_instace = new self;
         }
     }
+?>

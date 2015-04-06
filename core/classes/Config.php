@@ -1,58 +1,70 @@
 <?php
+    /**
+     * CLASS: Config
+     *
+     * Description: Contains essential configuration
+     * for internal functionality.
+     *
+     * @author: Andre Ferraz
+     * @copyright: ^
+     * @version: 2.0
+     */
 
-/**
- * Class Config
- *
- * Contains all configuration settings for database,
- * language, session data and cookie data.
- *
- * @author Andre Ferraz
- * @copyright 2015 Andre Ferraz
- * @since version 1
- * @TODO
- */
     class Config
     {
-
         /**
+         * Contains config data
+         *
          * @var array
-         * @access private
-         * @staticvar
+         * @access: private
+         * @static
          */
-        private static $config = array
+        private static $_config = array
         (
             "database" => array
             (
-                "host" => "localhost",
                 "username" => "root",
-                "password" => "",
-                "dbname" => "test"
-            )
+                "password" => '',
+                "dbname" => "mylib",
+                "host" => "localhost"
+            ),
+
+            "sessions" => array
+            (
+                "user_session" => "user",
+                "token_session" => "token"
+            ),
+
+            "cookies" => array
+            (
+                "lang_cookie" => ""
+            ),
+
         );
 
         /**
-         * @access public
+         * Description: returns value of keys
+         *
+         * @access: public
          * @static
-         * @param null $path
-         * @return array, mixed
          */
-        public static function getConf($path = null)
+        public static function get($key = null)
         {
-            if($path != null)
+            if($key != null)
             {
-                $config = self::$config;
-                $path = explode("/", $path); // Split string by string
+                $_config = self::$_config;
+                $key = explode(":", $key); // Splits string by another
 
-                foreach($path as $bit)
+                foreach($key as $value)
                 {
-                    if(isset($config[$bit]))
+                    if(isset($_config[$value]))
                     {
-                        $config = $config[$bit];
+                        $_config = $_config[$value];
                     }
                 }
-
-                return $config;
             }
+
+            return $_config;
         }
     }
 ?>

@@ -1,0 +1,12 @@
+<?php
+    require_once("core/ini.php");
+    if($user->isLoggedIn())
+    {
+        Session::destroy();
+        Redirect::to("login.php");
+    }
+    else
+    {
+        Redirect::to("login.php");
+    }
+?>
