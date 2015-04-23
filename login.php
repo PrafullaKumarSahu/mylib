@@ -3,10 +3,8 @@
         require_once("core/ini.php");
         if($user->isLoggedIn())
         {
-           Redirect::to("index.php");
+           Redirect::to("/");
         }
-
-        $user->login("ferrazzzz","Fzboi1992@@", $date->format("Y-m-d H:i:s"));
     ?>
     <html lang="en" class="app">
         <head>
@@ -20,15 +18,55 @@
                         <header class="wrapper text-center">
                             <strong>Login Page</strong>
                         </header>
+                        <?php
+                            if(isForm())
+                            {
+                                // Input Field Values
+                                $username = inputValue("username");
+                                $password = inputValue("password");
+                                $token = inputValue("csrf_token");
+
+                                // Checks if inputs are empty
+                                if(!empty($username) || !empty($password))
+                                {
+                                    // Prevents Cross Site Forgery Request
+                                    if(Security::isToken($token))
+                                    {
+                                        // Checks if User and Password and valid
+                                        if($user->isValidUser($username) && $user->isValidPassword($username, $password))
+                                        {
+                                            $user->login($username, $password, $date->format("Y-m-d H:i:s"));
+                                            Redirect::to("/");
+                                        }
+                                        else
+                                        {
+                                            $message->add("Invalid User or Password");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        $message->add("Something went wrong please refresh the page");
+                                    }
+                                }
+                                else
+                                {
+                                    $message->add("Username and password are required!");
+                                }
+                            }
+                        ?>
                         <form action="login.php" method="post">
                             <div class="list-group">
                                 <div class="list-group-item">
                                     <input type="text" placeholder="Username" name="username" class="form-control no-border">
                                 </div>
+                                <input type="hidden" name="csrf_token" value="<?php print(Security::doToken()); ?>">
                                 <div class="list-group-item">
                                     <input type="password" placeholder="Password" name="password" class="form-control no-border">
                                 </div>
                             </div>
+                            <?php
+                                print($message->get());
+                            ?>
                             <button type="submit" class="btn btn-lg btn-primary btn-block">Sign in</button>
                             <div class="text-center m-t m-b"><a href="forgot.php"><small class="text-warning">Forgot password?</small></a></div>
                             <div class="line line-dashed"></div>
