@@ -56,11 +56,6 @@
 
         }
 
-        public function delete()
-        {
-
-        }
-
         public function isSize($size)
         {
 

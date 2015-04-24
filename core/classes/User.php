@@ -111,6 +111,11 @@
             return $this->query("users", "email", "username='$username' AND email='$email'");
         }
 
+        public function emailExist($email)
+        {
+            return $this->query("users", "email", "email='$email'");
+        }
+
         /**
          * Description: Check if a password is valid, according to the
          * username provided. If the password matches the username password
@@ -180,6 +185,33 @@
                         break;
                 }
             }
+        }
+
+        /**
+         *
+         * Description: Gets Users profile data
+         * @param $username
+         * @return array
+         */
+        public function getProfile($username)
+        {
+            $this->get("users", "*", "username='$username'");
+            return $this->getResults();
+        }
+
+        public function updateDetails($table, $CV = array(), $condition)
+        {
+            return $this->update($table, $CV, $condition);
+        }
+
+        public function createUser($table, $CV = array())
+        {
+            return $this->insert($table, $CV);
+        }
+
+        public function checkToken($token)
+        {
+            return $this->query("users", "token", "token=".$token);
         }
 
         /**

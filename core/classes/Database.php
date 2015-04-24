@@ -156,9 +156,33 @@
          *
          * @access: protected
          */
-        protected function insert()
+        protected function insert($table, $CV = array())
         {
-            //@todo
+            if($CV !=null)
+            {
+                // Join array elements with a string
+                $columns = implode(", ", array_keys($CV));
+                $values = '';
+                $x = 1;
+                // Put array key values into variables
+                foreach($CV as $value)
+                {
+                    $values .= "'".$value."'";
+                    if($x < count($CV))
+                    {
+                        $values .= ', ';
+                    }
+                    $x++;
+                }
+                $query = $this->_pdo->prepare("INSERT INTO $table ($columns) VALUES({$values})");
+                // Check execution is successful
+                if($query->execute())
+                    return true;
+                else
+                    return false;
+            }
+
+            return false;
         }
 
         /**
@@ -166,9 +190,24 @@
          *
          * @access: protected
          */
-        protected function delete()
+        protected function delete($table, $condition = null)
         {
-            //@todo
+            if($condition != null)
+            {
+                $query = $this->_pdo->prepare("DELETE FROM $table WHERE $condition");
+                if($query->execute())
+                    return true;
+                else
+                    return false;
+            }
+            else
+            {
+                $query = $this->_pdo->prepare("DELETE FROM $table");
+                if($query->execute())
+                    return true;
+                else
+                    return false;
+            }
         }
 
         protected function getResults()

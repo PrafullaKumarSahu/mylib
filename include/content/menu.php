@@ -67,15 +67,27 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="#" class="auto">
+                                        <a href="/createcategory/" class="auto">
                                             <i class="fa  fa-file-o"></i>
-                                            <span>Categories</span>
+                                            <span>Create Category</span>
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="#" class="auto">
+                                        <a href="/createsubcategory/" class="auto">
                                             <i class="fa  fa-files-o"></i>
-                                            <span>Sub-Categories</span>
+                                            <span>Create Sub-Category</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="/deletecategory/" class="auto">
+                                            <i class="fa  fa-recycle"></i>
+                                            <span>Delete Category</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="/deletesubcategory/" class="auto">
+                                            <i class="fa  fa-recycle"></i>
+                                            <span>Delete Sub-Category</span>
                                         </a>
                                     </li>
                                 </ul>
@@ -85,19 +97,19 @@
                         <div class="text-muted text-xs hidden-nav-xs padder m-t-sm m-b-sm">My Account</div>
                         <ul class="nav">
                             <li>
-                                <a href="#">
+                                <a href="<?php print($host);?>">
                                     <i class="i i-circle-sm-o text-danger-dk"></i>
                                     <span>Profile</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="#">
+                                <a href="<?php print($host);?>settings/">
                                     <i class="i i-circle-sm-o text-success-lt"></i>
                                     <span>Settings</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="logout.php">
+                                <a href="<?php print($host);?>logout.php">
                                     <i class="i i-circle-sm-o text-warning"></i>
                                     <span>Logout</span>
                                 </a>

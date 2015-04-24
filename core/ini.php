@@ -30,4 +30,6 @@
     $user = new User();
     $library = new Library();
     $file_handler = new FileHandler();
+
+    $host = "http://localhost/";
 ?>

@@ -13,7 +13,7 @@
         <body>
             <section id="content" class="m-t-lg wrapper-md">
                 <div class="container aside-xl">
-                    <img class="logo" src="images/logo/main_logo.png">
+                    <img class="logo" src="<?php print($host); ?>images/logo/main_logo.png">
                     <section class="m-b-lg">
                         <header class="wrapper text-center">
                             <strong>Login Page</strong>
@@ -54,7 +54,7 @@
                                 }
                             }
                         ?>
-                        <form action="login.php" method="post">
+                        <form action="/login/" method="post">
                             <div class="list-group">
                                 <div class="list-group-item">
                                     <input type="text" placeholder="Username" name="username" class="form-control no-border">
@@ -65,13 +65,16 @@
                                 </div>
                             </div>
                             <?php
-                                print($message->get());
+                                if($message->get())
+                                {
+                                    print '<div class="alert alert-danger text-center"> <button type="button" class="close" data-dismiss="alert">×</button> <i class="fa fa-ban-circle"></i><strong>'.$message->get().'</strong></div>';
+                                }
                             ?>
                             <button type="submit" class="btn btn-lg btn-primary btn-block">Sign in</button>
                             <div class="text-center m-t m-b"><a href="forgot.php"><small class="text-warning">Forgot password?</small></a></div>
                             <div class="line line-dashed"></div>
                             <p class="text-muted text-center"><small>Do not have an account?</small></p>
-                            <a href="register.php" class="btn btn-lg btn-default btn-block">Create an account</a>
+                            <a href="/register/" class="btn btn-lg btn-default btn-block">Create an account</a>
                         </form>
                     </section>
                 </div>

@@ -3,10 +3,10 @@
     if($user->isLoggedIn())
     {
         Session::destroy();
-        Redirect::to("login.php");
+        Redirect::to("login/");
     }
     else
     {
-        Redirect::to("login.php");
+        Redirect::to("login/");
     }
 ?>

@@ -3,8 +3,8 @@
         <a class="btn btn-link visible-xs" data-toggle="class:nav-off-screen,open" data-target="#nav,html">
             <i class="fa fa-bars"></i>
         </a>
-        <a href="index.html" class="navbar-brand">
-            <img src="images/logo/main_logo.png" class="m-r-sm" alt="scale">
+        <a href="/" class="navbar-brand">
+            <img src="<?php print($host);?>images/logo/main_logo.png" class="m-r-sm" alt="scale">
         </a>
         <a class="btn btn-link visible-xs" data-toggle="dropdown" data-target=".user">
             <i class="fa fa-cog"></i>
@@ -14,43 +14,63 @@
         <div class="form-group">
             <div class="input-group">
             <span class="input-group-btn">
-              <button type="submit" class="btn btn-sm bg-white b-white btn-icon"><i class="fa fa-search"></i></button>
+                <?php
+                    if($user->isLoggedIn())
+                    {
+                        print('<button type="submit" class="btn btn-sm bg-white b-white btn-icon"><i class="fa fa-search"></i></button>');
+                        print('<input type="text" class="form-control input-sm no-border" placeholder="Search for books">');
+                    }
+                ?>
             </span>
-                <input type="text" class="form-control input-sm no-border" placeholder="Search for libraries">
             </div>
         </div>
     </form>
-    <ul class="nav navbar-nav navbar-right m-n hidden-xs nav-user user">
-        <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-            <span class="thumb-sm avatar pull-left">
-              <img src="<?php
-                  if($user->getData('avatar') == 'avatardefault.jpg')
-                  {
-                      print("images/users/avatardefault.jpg");
-                  }
-                  else
-                  {
-                      print("include/users/".$user->getData('token')."/".$user->getData('avatar'));
-                  }
-              ?>" alt="...">
-            </span>
-                <?php print($user->getData('username')); ?>
+    <?php
+        if($user->isLoggedIn())
+        {
+            print
+            '
+                <ul class="nav navbar-nav navbar-right m-n hidden-xs nav-user user">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <span class="thumb-sm avatar pull-left">
+                        <img src="
+            ';
+            if($user->getData('avatar') == 'avatardefault.jpg')
+            {
+                print("$host"."images/users/avatardefault.jpg");
+            }
+            else
+            {
+                print($user->getData('avatar'));
+            }
+
+            print
+            '
+                ">
+                </span>
+            ';
+            print($user->getData('username'));
+            print
+            '
                 <b class="caret"></b>
-            </a>
-            <ul class="dropdown-menu animated fadeInRight">
-                <li>
-                    <span class="arrow top"></span>
-                    <a href="#">Profile</a>
-                </li>
-                <li>
-                    <a href="">Settings</a>
-                </li>
-                <li class="divider"></li>
-                <li>
-                    <a href="logout.php">Logout</a>
+                </a>
+                <ul class="dropdown-menu animated fadeInRight">
+                    <li>
+                        <span class="arrow top"></span>
+                        <a href="'.$host.'">Profile</a>
+                    </li>
+                    <li>
+                        <a href="'.$host.'settings/">Settings</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="'.$host.'logout.php">Logout</a>
+                    </li>
+                </ul>
                 </li>
             </ul>
-        </li>
-    </ul>
+            ';
+        }
+    ?>
 </header>

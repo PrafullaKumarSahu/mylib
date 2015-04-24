@@ -1,0 +1,22 @@
+# Do not remove this line, otherwise mod_rewrite rules will stop working
+RewriteEngine on
+RewriteBase /
+
+# CLEAN URL PAGES
+RewriteRule ^login([/]?)$  login.php
+RewriteRule ^register([/]?)$  register.php
+RewriteRule ^createcategory([/]?)$  createcategory.php
+RewriteRule ^createsubcategory([/]?)$  createsubcategory.php
+RewriteRule ^deletecategory([/]?)$  deletecategory.php
+RewriteRule ^deletesubcategory([/]?)$  deletesubcategory.php
+RewriteRule ^settings([/]?)$  settings.php
+RewriteRule ^404([/]?)$  include/errors/404.php
+
+# CLEAN URL WITH VARIABLES
+RewriteRule ^user/([a-z1-9\-]+)([/]?)$ users.php?a=$1
+
+# ERRORDOCUMENTS
+ErrorDocument 404 http://localhost/404/
+
+# ===================== SECURITY =================== #
+IndexIgnore *

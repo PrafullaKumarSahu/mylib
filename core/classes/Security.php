@@ -79,9 +79,10 @@
          * @access: private
          * @static
          */
-        private function generate()
+        public static function generate()
         {
-            //@todo
+            $token = md5(uniqid());
+            return $token;
         }
     }
 ?>

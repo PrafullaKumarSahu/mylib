@@ -2475,9 +2475,10 @@ fieldset[disabled] .btn-dark.active {
   background-color: #159a78 !important;
 }
 .bg-info {
-  background-color: #1ccacc;
-  color: #bef5f6;
+  background-color: #FCD14C;
+  color: #000000;
 }
+
 .bg-info.lt,
 .bg-info .lt {
   background-color: #24dbdd;
